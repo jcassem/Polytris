@@ -99,3 +99,14 @@ div#game_links a {
     border-radius: 15px;
     margin: 4px;
 }
+
+#pause-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border: none;
+    background-color: white;
+    color: lightgrey;
+}

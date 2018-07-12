@@ -8,11 +8,11 @@
 </head>
 
 <body>
+    <div id="pause-frame" style="display:none;"><p>Much stealth</p></div>
     <div id="main">
         <h1>
             <a href="/Polytris">Polytris</a>
         </h1>
-
         <div>
             <p>Move pieces with the arrow keys. Rotate with Z and X. Pause with the P key.</p>
         </div>
@@ -52,6 +52,7 @@
             </div>
         </div>
     </div>
+
     <script src="src/utilities.js"></script>
     <script src="src/poly.js"></script>
     <script src="src/pieceGenerator.js"></script>
@@ -128,6 +129,8 @@
             // P
             if (key == 80) {
                 game.paused = !game.paused;
+                var pauseFrame = document.getElementById("pause-frame");
+                pauseFrame.style.display = pauseFrame.style.display === 'none' ? 'block' : 'none';
             }
             if (xMod != 0 || yMod != 0) {
                 game.moveCurrentPiece(xMod, yMod);

@@ -98,6 +98,9 @@ class PolytrisGame {
 
                 var yPos = Math.floor(j * cellHeight);
 
+                gtx.fillStyle = "#eee";
+                gtx.fillRect(i*cellWidth-1, 0, 1, gtx.canvas.height);
+
                 if (grid[i][j] === 0) {
                     gtx.fillStyle = "#FFFFFF";
                     gtx.fillRect(xPos, yPos, cellWidth, cellHeight);

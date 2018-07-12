@@ -1,7 +1,7 @@
-"use strict";
 //import * as $ from "jquery";
-class PolytrisGame {
-    constructor(gridWidth, gridHeight, pieces) {
+var PolytrisGame = /** @class */ (function () {
+    function PolytrisGame(gridWidth, gridHeight, pieces) {
+        var _this = this;
         this.logicTicks = 53;
         this.currentTick = 0;
         this.linesCleared = 0;
@@ -10,26 +10,27 @@ class PolytrisGame {
         this.paused = false;
         this.gameOver = false;
         this.gameOverPromptShown = false;
+        this.showGridLines = false;
         this.removingLinesFrames = 0;
         this.linesToRemove = null;
         this.pauseText = "Paused";
         this.gameOverText = "Game Over";
         /** The total number of frames to remove lines for. */
         this.removingLinesFramesDelay = 50;
-        this.tick = () => {
-            if (this.gameOver && !this.gameOverPromptShown) {
+        this.tick = function () {
+            if (_this.gameOver && !_this.gameOverPromptShown) {
                 // game over handling
                 var name = prompt("Game over. What is your name?", "");
-                this.gameOverPromptShown = true;
+                _this.gameOverPromptShown = true;
                 if (name) {
-                    this.writeStatus("Submitting score...");
+                    _this.writeStatus("Submitting score...");
                     $.ajax({
                         url: "https://cors-anywhere.herokuapp.com/http://scores.richteaman.com/api/score",
                         headers: {
                             "name": name,
-                            "lines": this.linesCleared.toString(10),
-                            "points": this.score.toString(10),
-                            "blocks": this.pieces[0].blocks.length.toString(10)
+                            "lines": _this.linesCleared.toString(10),
+                            "points": _this.score.toString(10),
+                            "blocks": _this.pieces[0].blocks.length.toString(10)
                         },
                         method: "POST"
                     })
@@ -41,37 +42,37 @@ class PolytrisGame {
                     location.reload();
                 }
             }
-            if (this.removingLinesFrames > 0) {
-                this.removingLinesFrames--;
-                if (this.removingLinesFrames == 0) {
-                    this.removeLines();
+            if (_this.removingLinesFrames > 0) {
+                _this.removingLinesFrames--;
+                if (_this.removingLinesFrames == 0) {
+                    _this.removeLines();
                 }
             }
-            else if (!this.gameOver && !this.paused && this.currentTick % this.logicTicks == 0) {
-                this.tickPiece();
+            else if (!_this.gameOver && !_this.paused && _this.currentTick % _this.logicTicks == 0) {
+                _this.tickPiece();
             }
-            this.renderGame(this.mainGtx, this.gameGrid, this.currentPiece);
-            PolytrisGame.renderPreview(this.previewGtx, PolytrisGame.createGrid(this.nextPiece.length, this.nextPiece.length), this.nextPiece.createPreviewPiece());
-            const linesClearedElement = document.getElementById("lines_cleared");
+            _this.renderGame(_this.mainGtx, _this.gameGrid, _this.currentPiece);
+            PolytrisGame.renderPreview(_this.previewGtx, PolytrisGame.createGrid(_this.nextPiece.length, _this.nextPiece.length), _this.nextPiece.createPreviewPiece());
+            var linesClearedElement = document.getElementById("lines_cleared");
             if (linesClearedElement) {
-                linesClearedElement.innerHTML = this.linesCleared.toString();
+                linesClearedElement.innerHTML = _this.linesCleared.toString();
             }
-            const scoreElement = document.getElementById("score");
+            var scoreElement = document.getElementById("score");
             if (scoreElement) {
-                scoreElement.innerHTML = this.score.toString();
+                scoreElement.innerHTML = _this.score.toString();
             }
-            const levelElement = document.getElementById("level");
+            var levelElement = document.getElementById("level");
             if (levelElement) {
-                levelElement.innerHTML = this.level.toString();
+                levelElement.innerHTML = _this.level.toString();
             }
-            this.currentTick++;
+            _this.currentTick++;
         };
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
         this.pieces = pieces;
         this.gameGrid = PolytrisGame.createGrid(this.gridWidth, this.gridHeight);
     }
-    static createGrid(width, height) {
+    PolytrisGame.createGrid = function (width, height) {
         var gameGrid = new Array(width);
         for (var i = 0; i < width; i++) {
             gameGrid[i] = new Array(height);
@@ -80,14 +81,14 @@ class PolytrisGame {
             }
         }
         return gameGrid;
-    }
-    spawnPiece() {
+    };
+    PolytrisGame.prototype.spawnPiece = function () {
         var pieceId = getRandomInt(0, this.pieces.length);
         var piece = this.pieces[pieceId];
         var newPiece = piece.clonePoly();
         return newPiece;
-    }
-    static renderBlock(gtx, x, y, width, height, colour) {
+    };
+    PolytrisGame.renderBlock = function (gtx, x, y, width, height, colour) {
         var margin = 2;
         gtx.fillStyle = colour;
         gtx.fillRect(x, y, width, height);
@@ -95,14 +96,15 @@ class PolytrisGame {
         gtx.fillRect(x, y, width, height);
         gtx.fillStyle = colour;
         gtx.fillRect(x + margin, y + margin, width - (2 * margin), height - (2 * margin));
-    }
+    };
     /**
      * Renders the given grid on the given context with the given active piece as a game.
      * @param {*} gtx
      * @param {any[][]} grid
      * @param {any[]} activePiece
      */
-    renderGame(gtx, grid, activePiece) {
+    PolytrisGame.prototype.renderGame = function (gtx, grid, activePiece) {
+        var _this = this;
         var cellWidth = gtx.canvas.width / grid.length;
         var cellHeight = gtx.canvas.height / grid[0].length;
         gtx.fillStyle = "#FFFFFF";
@@ -113,10 +115,10 @@ class PolytrisGame {
             var xPos = Math.floor(i * cellWidth);
             for (var j = 0; j < height; j++) {
                 var yPos = Math.floor(j * cellHeight);
-                
-                gtx.fillStyle = "#eee";
-                gtx.fillRect(i*cellWidth-1, 0, 1, gtx.canvas.height);
-
+                if (this.showGridLines) {
+                    gtx.fillStyle = "#eee";
+                    gtx.fillRect(i * cellWidth - 1, 0, 1, gtx.canvas.height);
+                }
                 if (grid[i][j] === 0) {
                     gtx.fillStyle = "#FFFFFF";
                     gtx.fillRect(xPos, yPos, cellWidth, cellHeight);
@@ -130,8 +132,8 @@ class PolytrisGame {
         if (this.removingLinesFrames > 0) {
             if (Math.floor(this.removingLinesFrames / 5) % 2 == 0) {
                 gtx.fillStyle = "#CCCC00";
-                this.linesToRemove.forEach(lineNumber => {
-                    gtx.fillRect(0, lineNumber * cellHeight, this.gridWidth * cellWidth, cellHeight);
+                this.linesToRemove.forEach(function (lineNumber) {
+                    gtx.fillRect(0, lineNumber * cellHeight, _this.gridWidth * cellWidth, cellHeight);
                 });
             }
             else {
@@ -164,14 +166,14 @@ class PolytrisGame {
             var pauseTextXpos = (gtx.canvas.width / 2) - (pauseTextWidth / 2);
             gtx.fillText(this.pauseText, pauseTextXpos, gtx.canvas.height / 2);
         }
-    }
+    };
     /**
      * Renders the given grid on the given context with the given active piece as a preview.
      * @param {*} gtx
      * @param {any[][]} grid
      * @param {any[]} activePiece
      */
-    static renderPreview(gtx, grid, activePiece) {
+    PolytrisGame.renderPreview = function (gtx, grid, activePiece) {
         var cellWidth = Math.floor(gtx.canvas.width / grid.length);
         var cellHeight = Math.floor(gtx.canvas.height / grid[0].length);
         gtx.fillStyle = "#FFFFFF";
@@ -182,7 +184,7 @@ class PolytrisGame {
         for (var i = 0; i < activePiece.length; i++) {
             this.renderBlock(gtx, activePiece.blocks[i].x * cellWidth, activePiece.blocks[i].y * cellHeight, cellWidth, cellHeight, colour);
         }
-    }
+    };
     /**
      * Return true if move was possible, other false.
      *
@@ -190,7 +192,7 @@ class PolytrisGame {
      * @argument yMod {number} Change in y position.
      * @returns {boolean}
      */
-    moveCurrentPiece(xMod, yMod) {
+    PolytrisGame.prototype.moveCurrentPiece = function (xMod, yMod) {
         var canMovePiece = true;
         for (var i = 0; i < this.currentPiece.length; i++) {
             var x = this.currentPiece.blocks[i].x + xMod;
@@ -211,8 +213,8 @@ class PolytrisGame {
             }
         }
         return canMovePiece;
-    }
-    tickPiece() {
+    };
+    PolytrisGame.prototype.tickPiece = function () {
         if (!this.moveCurrentPiece(0, 1)) {
             for (var i = 0; i < this.currentPiece.length; i++) {
                 this.gameGrid[this.currentPiece.blocks[i].x][this.currentPiece.blocks[i].y] = this.currentPiece.createPolyColor();
@@ -228,20 +230,20 @@ class PolytrisGame {
                 this.nextPiece = this.spawnPiece();
             }
         }
-    }
-    writeStatus(message) {
-        const statusElement = document.getElementById("status");
+    };
+    PolytrisGame.prototype.writeStatus = function (message) {
+        var statusElement = document.getElementById("status");
         if (statusElement) {
             statusElement.innerHTML = message;
         }
-    }
-    calculateLineClearedBonus(linesCleared) {
+    };
+    PolytrisGame.prototype.calculateLineClearedBonus = function (linesCleared) {
         var base = (this.level + 1) * 25;
         var bonus = base * Math.pow(3.5, linesCleared - 1);
         bonus = Math.floor(bonus);
         return bonus;
-    }
-    calculateLevelUp() {
+    };
+    PolytrisGame.prototype.calculateLevelUp = function () {
         var earnedLevel = Math.floor(this.linesCleared / 10);
         if (earnedLevel > 20) {
             earnedLevel = 20;
@@ -318,8 +320,8 @@ class PolytrisGame {
             }
             this.currentTick = 0;
         }
-    }
-    checkLines() {
+    };
+    PolytrisGame.prototype.checkLines = function () {
         var removedLines = new Array();
         for (var j = this.gridHeight - 1; j >= 0; j--) {
             var clearLine = true;
@@ -339,8 +341,8 @@ class PolytrisGame {
             return true;
         }
         return false;
-    }
-    removeLines() {
+    };
+    PolytrisGame.prototype.removeLines = function () {
         var linesAdded = 0;
         var addedLineCount = this.gridHeight - 1;
         var newGameGrid = PolytrisGame.createGrid(this.gridWidth, this.gridHeight);
@@ -368,15 +370,15 @@ class PolytrisGame {
         this.linesCleared += linesAdded;
         this.gameGrid = newGameGrid;
         this.calculateLevelUp();
-    }
-    dropPiece() {
+    };
+    PolytrisGame.prototype.dropPiece = function () {
         while (this.moveCurrentPiece(0, 1)) { }
         this.tickPiece();
-    }
+    };
     /**
      * Rotates the current piece clockwise. Returns true if the move was possible.
      */
-    rotateCurrentPieceClockwise() {
+    PolytrisGame.prototype.rotateCurrentPieceClockwise = function () {
         var clone = this.currentPiece.rotateClockwise();
         var canMovePiece = true;
         for (var i = 0; i < clone.length; i++) {
@@ -395,11 +397,11 @@ class PolytrisGame {
             this.currentPiece = clone;
         }
         return canMovePiece;
-    }
+    };
     /**
      * Rotates the current piece anticlockwise. Returns true if the move was possible.
      */
-    rotateCurrentPieceAntiClockwise() {
+    PolytrisGame.prototype.rotateCurrentPieceAntiClockwise = function () {
         var clone = this.currentPiece.rotateAntiClockwise();
         var canMovePiece = true;
         for (var i = 0; i < clone.length; i++) {
@@ -418,16 +420,17 @@ class PolytrisGame {
             this.currentPiece = clone;
         }
         return canMovePiece;
-    }
-    rebuildGtx() {
+    };
+    PolytrisGame.prototype.rebuildGtx = function () {
         this.mainGtx = document.getElementById("gtx").getContext("2d");
         this.previewGtx = document.getElementById("preview_gtx").getContext("2d");
-    }
-    startGame() {
+    };
+    PolytrisGame.prototype.startGame = function () {
         this.rebuildGtx();
         this.currentPiece = this.spawnPiece();
         this.moveCurrentPiece(this.gridWidth / 2, 0);
         this.nextPiece = this.spawnPiece();
         setInterval(this.tick, 17);
-    }
-}
+    };
+    return PolytrisGame;
+}());

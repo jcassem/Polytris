@@ -15,6 +15,7 @@ class PolytrisGame {
     paused = false;
     gameOver = false;
     gameOverPromptShown = false;
+    showGridLines = false;
 
     gameGrid: any[][];
     pieces: Poly[];
@@ -98,8 +99,10 @@ class PolytrisGame {
 
                 var yPos = Math.floor(j * cellHeight);
 
-                gtx.fillStyle = "#eee";
-                gtx.fillRect(i*cellWidth-1, 0, 1, gtx.canvas.height);
+                if (this.showGridLines) {
+                    gtx.fillStyle = "#eee";
+                    gtx.fillRect(i*cellWidth-1, 0, 1, gtx.canvas.height);
+                }
 
                 if (grid[i][j] === 0) {
                     gtx.fillStyle = "#FFFFFF";

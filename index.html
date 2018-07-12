@@ -14,7 +14,7 @@
             <a href="/Polytris">Polytris</a>
         </h1>
         <div>
-            <p>Move pieces with the arrow keys. Rotate with Z and X. Pause with the P key.</p>
+            <p>Move pieces with the arrow keys. Rotate with Z and X. Pause with the P key (or O for stealth pause). Press B to toggle grid lines.</p>
         </div>
         <div id="status"></div>
         <div id="game_row">
@@ -130,6 +130,7 @@
             if (key == 80) {
                 game.paused = !game.paused;
             }
+            // O
             else if (key == 79) {
                 game.paused = !game.paused;
                 var pauseFrame = document.getElementById("pause-frame");
@@ -137,6 +138,10 @@
             }
             if (xMod != 0 || yMod != 0) {
                 game.moveCurrentPiece(xMod, yMod);
+            }
+            // B
+            if(key == 66){
+                game.showGridLines = !game.showGridLines;
             }
         }
     </script>

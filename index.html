@@ -129,6 +129,9 @@
             // P
             if (key == 80) {
                 game.paused = !game.paused;
+            }
+            else if (key == 79) {
+                game.paused = !game.paused;
                 var pauseFrame = document.getElementById("pause-frame");
                 pauseFrame.style.display = pauseFrame.style.display === 'none' ? 'block' : 'none';
             }
